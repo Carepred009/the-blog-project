@@ -1,0 +1,19 @@
+from email.policy import default
+
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
+from .views import PostViewSet
+
+#Create a router and register our viewset with it
+router = DefaultRouter()
+#use the posts to list all data
+router.register(r'posts', PostViewSet, basename='post') #THe router generates the URLs
+
+urlpatterns = router.urls
+
+# we will us this soon, if we dont use the viewset
+urlpatterns = [
+    #default url for localhost
+    path('', include(router.urls)),
+
+]
