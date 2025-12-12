@@ -1,0 +1,28 @@
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# vuejs node and dist
+frontend/blogprojectvue/node_modules/
+frontend/blogprojectvue/dist/
+
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+
+# SQLite DB (if just for dev)
+*.sqlite3
+
+# IDE folders
+.idea/
+.vscode/
+
+# macOS system file
+.DS_Store
