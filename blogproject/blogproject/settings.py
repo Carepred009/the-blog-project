@@ -42,10 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework', #add this to use DRF
+
+    'corsheaders', #add to not block the access from frontent
+
     'blogapp', #this is you app
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', #Add this fof CORS
+
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +60,20 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# 3. Allow Vue to connect (For development only)
+#Option A: Allow all origins (development only)
+CORS_ALLOW_ALL_ORIGINS = True # we added this
+
+'''
+Option B: Allow specific frontend (recommended)
+If your Vue app runs on localhost:5173 (Vite):
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+'''
 
 ROOT_URLCONF = 'blogproject.urls'
 
