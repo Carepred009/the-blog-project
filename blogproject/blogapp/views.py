@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 #for the the current User
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 #import the models here
 from .models import Post
@@ -16,9 +16,12 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = Postserializers
         #use this to avoid anonymouse user, we wont use this for now.
         #this is needed when the user is actually log in
-    permission_classes = [IsAuthenticated]
+
+    #do not use any authentication when testing the basic CRUD
+    #permission_classes =  [AllowAny]#[IsAuthenticated]
 
     #We will not us this for now, we can keep it but it will be null
-    def perform_create(self, serializer):
+
+   # def perform_create(self, serializer):
         #Set automatically set the author to the current logged-in user
-        serializer.save(author = self.request.user)
+     #   serializer.save(author = self.request.user)

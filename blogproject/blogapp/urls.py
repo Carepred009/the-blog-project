@@ -14,6 +14,6 @@ urlpatterns = router.urls
 # we will us this soon, if we dont use the viewset
 urlpatterns = [
     #default url for localhost
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
 
 ]
