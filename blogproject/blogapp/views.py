@@ -12,8 +12,9 @@ from .serializers import Postserializers
 #We will use viewset for all the CRUD operation
 #this view is for Post model
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-post_id') #the .order_by('-post_id') will responsible for displaying the lates posting
     serializer_class = Postserializers
+
         #use this to avoid anonymouse user, we wont use this for now.
         #this is needed when the user is actually log in
 
