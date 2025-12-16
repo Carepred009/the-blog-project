@@ -20,8 +20,9 @@
                         and loads the response data into the modal.
                     -->
                  <button @click="getPostId(content.post_id)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-                        Update Post
+                        Action
                   </button>
+
                 </div>
                   <br>
            </div>
@@ -40,7 +41,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                       </div>
 
-                      <!-- Modal body -->
+                                <!-- Modal body -->
                       <div class="modal-body">
                             <!-- update the specific post
                             selectedPost data will be displayed here based on the selected ID
@@ -51,16 +52,50 @@
                                 <label>Title </label>
                                         <!--Can update with or without this   -->
                                 <p>ID : {{selectedPost.post_id}} </p>
-                                <label>Title </label>
 
-                                <input type="text" v-model="selectedPost.title">
-                                <br>
-                                <label>Post </label>
-                                <input type="text" v-model="selectedPost.post">
+                                <div class="mb-3">
+                                    <label for="postTitle" class="form-label"> Title </label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="postTitle"
+                                        v-model="selectedPost.title"
+                                    >
+                                </div>
+
+                                <div class=mb-4>
+                                    <label for="postContent" class="form-label">Post Content </label>
+                                    <textarea
+                                        class="form-control"
+                                        id="postContent"
+                                        v-model="selectedPost.post"
+                                        placeholder="Enter your post content here!"
+                                    >
+                                    </textarea>
+                                </div>
                                  <br>
-                                <button type="submit">Update the Post </button>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-warning">
+                                        Save Changes
+                                    </button>
+                                </div>
+                                <br>
+
+
                             </form>
                       </div>
+                      <hr class="my-4">
+
+                      <div class="text-start">
+                        <label class="form-label text-danger">Danger Zone</label>
+                        <p class="text-muted small">Once you delete this post, there is no going back.</p>
+                        <button
+                            @click="postDelete(selectedPost.post_id)"
+                            class="btn btn-sm btn-outline-danger"
+                        >
+                            <i class="bi bi-trash"></i> Delete Post
+                        </button>
+                       </div>
 
                       <!-- Modal footer
                       <div class="modal-footer">
@@ -144,13 +179,27 @@ export default{
                     const response = await api.put(`/api/posts/${this.selectedPost.post_id}/`,this.selectedPost);
                             //Passes the updated post data with single object to  the 'selectedPost'
                     this.selectedPost = response.data;
+                    alert('Post Updated!')
                     console.log("Updated!", response.data)
                 }catch(error){
                             //log the error
                     console.error(error)
                 }//end of try/catch
-            }
+            },
          //end of function
+
+
+         //Start of function
+         async postDelete(postId){
+            try{
+                        //Call the API end point with DELETE request with the ID
+                const response = await api.delete(`/api/posts/${postId}/`)
+                console.log("delete!",response.data)
+                alert('Post delete!')
+            }catch(error){
+                console.error(error)
+            }//end of try/catch
+         }//end of function
 
     },//end of methods
 
