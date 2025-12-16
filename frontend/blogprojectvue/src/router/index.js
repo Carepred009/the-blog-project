@@ -9,11 +9,10 @@ const router = createRouter({
   routes: [
 
     {
-    path:'/post-create/',
+    path:'/post-create/', //use this url path to display the tempalte
     name: 'post_create',
     component: Postcreate,
     props:true
-
     }
 
   ],
