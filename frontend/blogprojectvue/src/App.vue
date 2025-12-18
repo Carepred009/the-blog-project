@@ -7,11 +7,6 @@
    </div>
    <br>
 
-   <div>
-    <!-- Displays the data from the from backend -->
-    <post-content/>
-   </div>
-
 
 </template>
 

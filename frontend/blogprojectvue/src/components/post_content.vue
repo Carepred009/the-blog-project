@@ -105,7 +105,7 @@
 
                     </div>
                   </div>
-                </div> //end of modal
+                </div>
 
 
 
