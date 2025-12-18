@@ -18,6 +18,15 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
+    #for admin url
     path('admin/', admin.site.urls), #this url path is for admin
+
+    # Auth APIs (GLOBAL)
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+
+    # Your app APIs
     path('', include('blogapp.urls')) #this url path is for the app,
+
+
 ]
