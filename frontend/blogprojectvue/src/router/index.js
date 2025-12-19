@@ -14,6 +14,10 @@ import registration from "../views/Registration.vue"
 // This component will be used as the home page
 import post_display from "../views/post_display.vue"
 
+//import the login.vue
+//this component will be use for login
+import login from "../views/login.vue"
+
 const router = createRouter({
           // Configure router to use HTML5 history mode
             // This removes the # from URLs
@@ -25,6 +29,14 @@ const router = createRouter({
         name: 'home',                 // Unique name for this route
         component: post_display,        // Vue component that will render for this route
         props: true                       // Allow route params to be passed as props to the component
+    },
+
+    {           // use this url path to display login.vue
+        path: "/login/",
+        name: "login",     //Vue component that will render for this route
+        component: login,     //  // Allow route params to be passed as props to the component
+        props: true
+
     },
 
     //{
@@ -45,5 +57,32 @@ const router = createRouter({
 
   ],
 })
-               // Export the router so it can be used in main.js
+
+
+
+
+// This function runs BEFORE every route change in the app
+router.beforeEach((to, from, next) => {
+
+  // Get the access token from browser storage
+  // If user is logged in, this token exists
+  const token = localStorage.getItem("access");
+
+  // Check:
+  // 1. User is NOT going to the login page
+  // 2. User does NOT have an access token
+  if (to.path !== "/login" && !token) {
+
+    // If both conditions are true:
+    // Force the user to go to the login page
+    next("/login");
+
+  } else {
+
+    // Otherwise:
+    // Allow navigation to continue normally
+    next();
+  }
+});
+                     // Export the router so it can be used in main.js
 export default router
