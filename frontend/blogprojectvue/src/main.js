@@ -17,7 +17,7 @@ const app = createApp(App)
 
     //Registering the component globally with the tag name 'post-content'
     //This allows <post-content></post-content> to be used anywhere in the app.
-//app.component('post-content', getContent)
+    //app.component('post-content', getContent)
     // Integrates the Vue Router plugin into the application
 app.use(router)
     // Mounts the entire application to the HTML element with the ID 'app'

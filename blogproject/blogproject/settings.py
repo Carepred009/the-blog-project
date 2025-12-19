@@ -41,10 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites',
+    'django.contrib.sites',  # Needed for allauth
 
     'rest_framework',
-    'rest_framework.authtoken',
+    'rest_framework.authtoken', # Neeed for token authentication
 
     'dj_rest_auth',
     'dj_rest_auth.registration',
