@@ -1,6 +1,11 @@
 <template>
 
+    <div>
+        <h1> We will put the logout in here for now! </h1>
+        <button @click="logoutUser()"> LOG OUT FOR NOW </button>
+    </div>
 <div class="container mt-5">
+
     <form @submit.prevent="createPost">
 
     <div class="card-header bg-primary text-while text-center">
@@ -64,8 +69,40 @@ export default{
             }catch(error){
                 console.error(error)
             }
-        },
-   },
+        },  //end of function
+
+        // This function logs out the currently authenticated user
+        async logoutUser(){
+                try{
+                        // Send a POST request to the Django logout endpoint
+                        // The Axios interceptor automatically adds the Authorization header (access token)
+                    const response = await api.post(`/api/logout/`, {
+
+                                // Send the refresh token in the request body
+                                 // This allows the backend to blacklist (invalidate) the refresh token
+                        refresh: localStorage.getItem("refresh"),
+                    })
+                                    // Remove the access token from localStorage
+                                    // This immediately logs the user out on the frontend
+                    localStorage.removeItem("access")
+
+                     // Remove the refresh token from localStorage
+                      // This prevents the user from getting new access tokens
+                    localStorage.removeItem("refresh")
+
+                    // Redirect the user to the login page after logout
+                    this.$router.push("/login")
+
+
+                    console.log(response.data)  // Log the response from the backend (for debugging)
+                    alert("Successfully logout!")
+                }catch(error){
+                    console.error(error)    // Log any error that occurs during the logout process
+                    alert("Error in log out!")
+                }
+        }, //end of function
+
+   }, //end of method
 
 };
 

@@ -2,7 +2,7 @@ from email.policy import default
 
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from .views import PostViewSet
+from .views import PostViewSet, LogoutView
 
 #for login
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
@@ -17,10 +17,26 @@ urlpatterns = router.urls
 # we will us this soon, if we dont use the viewset
 urlpatterns = [
     #default url for localhost
+    # API routes from ViewSets
     path('api/', include(router.urls)),
 
-    #Use for Login
+    #Use for Login,Logout
+    #  path('api/login/', this is wrong!
+    # # JWT Authentication
     path('api/token/',TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(),  name='token_refresh' )
+    path('api/token/refresh/', TokenRefreshView.as_view(),  name='token_refresh' ),
 
+    # JWT Logout
+    path('api/logout/', LogoutView.as_view(), name="logout"),
 ]
+
+'''
+
+/auth/registration/
+
+/auth/login/
+
+/auth/logout/
+
+/auth/password/reset/
+'''

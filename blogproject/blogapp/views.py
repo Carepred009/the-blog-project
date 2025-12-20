@@ -1,5 +1,12 @@
+
+
+from rest_framework.views import APIView
+from rest_framework.permissions import  IsAuthenticated
+from rest_framework.response import Response
+from  rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import render
 from rest_framework import viewsets
+
 #for the the current User
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -26,3 +33,15 @@ class PostViewSet(viewsets.ModelViewSet):
    # def perform_create(self, serializer):
         #Set automatically set the author to the current logged-in user
      #   serializer.save(author = self.request.user)
+
+#This view is for logout to invalidates the refresh token after log out
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+        return Response({"detail": "Logged out successfully"})
