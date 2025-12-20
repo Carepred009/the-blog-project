@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken', # Neeed for token authentication
 
+        #for simpleJWT
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist', #use for token blacklisting the cannot use it again
+
     'dj_rest_auth',
     'dj_rest_auth.registration',
 
@@ -80,11 +84,19 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+            #Do not mix with JWT
+        #'rest_framework.authentication.TokenAuthentication',
+            #for logout
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
 #Tell dj-rest-auth to use JWT:
 REST_USE_JWT = True
+
+# Need to understands this
+SIMPLE_JWT = {
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 
 #Without this, allauth may behave unexpectedly (email login issues, username conflicts).
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
