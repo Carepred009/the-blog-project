@@ -11,9 +11,9 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 #import the models here
-from .models import Post
+from .models import Post, Profile
 #import the Serializers
-from .serializers import Postserializers
+from .serializers import Postserializers, Profileserializers
 
 # Create your views here.
 #We will use viewset for all the CRUD operation
@@ -45,3 +45,8 @@ class LogoutView(APIView):
             token.blacklist()
 
         return Response({"detail": "Logged out successfully"})
+
+#We will use viewset for all the CRUD operation
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = Profileserializers

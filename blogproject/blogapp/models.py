@@ -2,6 +2,9 @@ from django.db import models
 
 #import the user from the User model in the Django admin
 from django.contrib.auth.models import User
+from django.utils.translation.template import blankout
+
+
 # Create your models here.
 
 
@@ -18,3 +21,13 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+
+#Profile page for the user
+class Profile(models.Model):
+    profile_id = models.AutoField(primary_key = True)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profile_images/', blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank = True, null =True )
+
+    def __str__(self):
+        return  self.user.username
