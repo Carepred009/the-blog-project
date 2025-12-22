@@ -1,16 +1,21 @@
 from email.policy import default
+from os.path import basename
 
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from .views import PostViewSet, LogoutView
+from .views import PostViewSet, LogoutView, ProfileViewSet
 
-#for login
+#for login,logout
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 
 #Create a router and register our viewset with it
 router = DefaultRouter()
+
 #use the posts to list all data
 router.register(r'posts', PostViewSet, basename='post') #THe router generates the URLs
+
+#use the /profiles/ access the url
+router.register(r'profiles', ProfileViewSet, basename="profile")
 
 urlpatterns = router.urls
 

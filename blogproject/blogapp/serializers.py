@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Post
+from .models import Post, Profile
 
 class Postserializers(serializers.ModelSerializer):
     class Meta:
@@ -11,4 +11,10 @@ class Postserializers(serializers.ModelSerializer):
         read_only_fields = ['author','created_at'] #These fields are not required for input
 
 
-#User registration
+#serializer for Profile page
+class Profileserializers(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        # WE can keep it like this, still working. Soon need authentication for the current user
+        fields = ['profile_id','bio','profile_picture','user']
+
