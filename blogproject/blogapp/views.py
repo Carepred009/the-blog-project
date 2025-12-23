@@ -15,12 +15,31 @@ from .models import Post, Profile
 #import the Serializers
 from .serializers import Postserializers, Profileserializers
 
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import OrderingFilter
+from .pagination import PostPagination # this is from pagination.py
+
+
 # Create your views here.
 #We will use viewset for all the CRUD operation
 #this view is for Post model
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-post_id') #the .order_by('-post_id') will responsible for displaying the lates posting
+    queryset = Post.objects.all() #.order_by('-post_id') #the .order_by('-post_id') will responsible for displaying the lates posting
     serializer_class = Postserializers
+
+
+    pagination_class = PostPagination                       # Connects pagination to this API
+
+
+    filter_backends = [OrderingFilter]                      # Enables ordering via query params
+
+    ordering_fields = ['post','author','created_at']         # Fields allowed to be ordered
+
+
+    ordering = ['-post_id']                                     # Default ordering (newest first)  we can use it later
+
+
+
 
         #use this to avoid anonymouse user, we wont use this for now.
         #this is needed when the user is actually log in
@@ -34,6 +53,7 @@ class PostViewSet(viewsets.ModelViewSet):
         #Set automatically set the author to the current logged-in user
      #   serializer.save(author = self.request.user)
 
+
 #This view is for logout to invalidates the refresh token after log out
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -45,6 +65,7 @@ class LogoutView(APIView):
             token.blacklist()
 
         return Response({"detail": "Logged out successfully"})
+
 
 #We will use viewset for all the CRUD operation
 class ProfileViewSet(viewsets.ModelViewSet):
