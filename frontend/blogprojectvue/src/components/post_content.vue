@@ -26,7 +26,39 @@
                 </div>
                   <br>
            </div>
-    </div>
+
+
+                      <!-- Ordering -->
+                    <div class="my-4 text-center">
+                             <button class="btn btn-secondary me-2" @click="changeOrder('created_at')">
+                                Oldest
+                              </button>
+
+                              <button class="btn btn-secondary" @click="changeOrder('-created_at')">
+                                Newest
+                              </button>
+                    </div>
+
+                                <!-- Pagination -->
+                    <div class="d-flex justify-content-center gap-3 my-4">
+                                  <button
+                                    class="btn btn-outline-primary"
+                                    :disabled="!previous"
+                                    @click="getContent(previous)"
+                                  >
+                                    Previous
+                                  </button>
+
+                                  <button
+                                    class="btn btn-outline-primary"
+                                    :disabled="!next"
+                                    @click="getContent(next)"
+                                  >
+                                    Next
+                                  </button>
+                                </div>
+                    </div>
+
 
 
 
@@ -119,12 +151,15 @@ export default{
     data(){
 
         return{
-                    // holds the list of posts fetched from the API
-                    //list
+                        // holds the list of posts fetched from the API
+                        //list
             contents:[],
+            next:null,                   // Next page URL
+            previous: null,              // Previous page URL
+            ordering: "-created_at",         //default ordering
 
-                   // single post used for updating
-                   // bound to the modal inputs via v-model
+                               // single post used for updating
+                               // bound to the modal inputs via v-model
             selectedPost: {
                 post_id: "",
                 title: "",
@@ -139,32 +174,50 @@ export default{
     },
 
     methods:{
-        async getContent(){
+        async getContent(url = null){
             try{
-                  // calls API end point to fetch the list posts
-                const response = await api.get(`/api/posts/`);
-                    // The raw data returned by the API will display in the console for debugging
-                console.log(response.data);
-                    // Passes the fetched post data (the array of posts) to the 'contents' data property
-                    //use this.contents = response.data.result; when using pagination
-                this.contents = response.data;
+                                                                     // calls API end point to fetch the list posts
+                const response = await api.get( url || `/api/posts/?ordering=${this.ordering}`);                // Makes an asynchronous GET request to the API; uses the provided 'url' if available, otherwise constructs a URL using the current 'ordering'
+
+                console.log(response.data);                                  // The raw data returned by the API will display in the console for debugging
+                                                                          // Passes the fetched post data (the array of posts) to the 'contents' data property
+                                                                             //use this.contents = response.data.result; when using pagination
+                this.contents = response.data.results                // Assigns the array of posts (from the 'results' field in the API response) to the component's 'contents' data property (used to display content lists with pagination)
+
+                this.next = response.data.next                      // Assigns the URL for the next page of results (for pagination) to the component's 'next' data property
+
+                this.previous = response.data.previous               // Assigns the URL for the previous page of results (for pagination) to the component's 'previous' data property
+
+                console.log(this.next)                                 // Logs the URL for the next page to the console for debugging
+                console.log(this.previous)                            // Logs the URL for the previous page to the console for debugging
+
             }catch(error){
-                // Logs any errors encountered during the API call
-                console.error(error) //will display error at console.log()
+                                                                                // Logs any errors encountered during the API call
+                console.error(error)                                               //will display error at console.log()
             } //end try/catch
 
         }, //end function
 
 
-            //Start of update function
-            //retrieve the data of the specific ID
+          //start of unction
+        changeOrder(order){                          // Defines a method 'changeOrder' that accepts a new sorting 'order'
+            this.ordering = order                   // Updates the component's 'ordering' data property with the new sorting value
+
+            this.getContent()                       // Calls the 'getContent' method to fetch data from the API again, now using the newly set 'ordering'
+        }, //end of function
+
+
+
+
+                        //Start of update function
+                        //retrieve the data of the specific ID
          async getPostId(postId){
                 try{
-                            //Calls the API end point GET request with the ID
+                                                                                 //Calls the API end point GET request with the ID
                     const response = await api.get(`/api/posts/${postId}`);
                     console.log(response.data);
-                            //returns the data the selectedPost
-                            //Passes the fetched post data with single object to  the 'selectedPost'
+                                                                              //returns the data the selectedPost
+                                                                             //Passes the fetched post data with single object to  the 'selectedPost'
                     this.selectedPost = response.data;
                 }catch(error){
                     console.error(error)
@@ -172,12 +225,12 @@ export default{
 
          }, //End of update Function
 
-         //Start function to update
+                                          //Start function to update
         async postUpdate(postId){
                 try{
-                                //Calls the API end point with PUT request with  the ID
+                                                                                                  //Calls the API end point with PUT request with  the ID
                     const response = await api.put(`/api/posts/${this.selectedPost.post_id}/`,this.selectedPost);
-                            //Passes the updated post data with single object to  the 'selectedPost'
+                                                                                                     //Passes the updated post data with single object to  the 'selectedPost'
                     this.selectedPost = response.data;
                     alert('Post Updated!')
                     console.log("Updated!", response.data)
@@ -189,10 +242,10 @@ export default{
          //end of function
 
 
-         //Start of function
+                                    //Start of function
          async postDelete(postId){
             try{
-                        //Call the API end point with DELETE request with the ID
+                                                                             //Call the API end point with DELETE request with the ID
                 const response = await api.delete(`/api/posts/${postId}/`)
                 console.log("delete!",response.data)
                 alert('Post delete!')
