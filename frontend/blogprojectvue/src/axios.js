@@ -28,7 +28,7 @@ api.interceptors.request.use(config => {
   if (token) {
             // Attach the token to the Authorization header
         // "Bearer" is required by JWTAuthentication in DRF
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
         // Return the modified request configuration
     // If we don't return this, the request will fail

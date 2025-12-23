@@ -5,7 +5,7 @@ from rest_framework.permissions import  IsAuthenticated
 from rest_framework.response import Response
 from  rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets,permissions
 
 #for the the current User
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -48,5 +48,10 @@ class LogoutView(APIView):
 
 #We will use viewset for all the CRUD operation
 class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
+    #queryset = Profile.objects.all() --remove this because we will link the profile to the only one user
     serializer_class = Profileserializers
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Return ONLY the logged-in user's profile
+        return Profile.objects.filter(user = self.request.user)

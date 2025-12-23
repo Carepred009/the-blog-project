@@ -18,12 +18,23 @@ import post_display from "../views/post_display.vue"
 //this component will be use for login
 import login from "../views/login.vue"
 
+//this component will be use for the Profile page
+import profile from "../views/Profile.vue"
+
+
 const router = createRouter({
           // Configure router to use HTML5 history mode
             // This removes the # from URLs
   history: createWebHistory(import.meta.env.BASE_URL),
                  // Define all application routes
   routes: [
+    {
+        path:"/profile_page/",  // use this route to display the profile page
+        name: "profile_page",
+        component: profile,
+        props: true
+    },
+
     {       //this template will be our default  home page
         path: "/",
         name: 'home',                 // Unique name for this route
