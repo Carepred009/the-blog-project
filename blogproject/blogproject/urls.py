@@ -27,6 +27,8 @@ urlpatterns = [
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
 
+    #this will force Browsable API to authenticate user
+    path('api-auth/', include('rest_framework.urls')),
     # Your app APIs
     path('', include('blogapp.urls')) #this url path is for the app,
 

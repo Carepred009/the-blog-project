@@ -3,7 +3,7 @@ from os.path import basename
 
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from .views import PostViewSet, LogoutView, ProfileViewSet
+from .views import PostViewSet, LogoutView, ProfileViewSet, ReactionView
 
 #for login,logout
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
@@ -16,6 +16,8 @@ router.register(r'posts', PostViewSet, basename='post') #THe router generates th
 
 #use the /profiles/ access the url
 router.register(r'profiles', ProfileViewSet, basename="profile")
+
+#router.register(r'reactions', ReactionViewSet, basename="reaction")
 
 urlpatterns = router.urls
 
@@ -33,6 +35,11 @@ urlpatterns = [
 
     # JWT Logout
     path('api/logout/', LogoutView.as_view(), name="logout"),
+
+    # API end point Reaction view
+    path('react/', ReactionView.as_view(), name="post-react"),
+
+
 ]
 
 '''

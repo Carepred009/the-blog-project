@@ -1,19 +1,22 @@
-
-
+from django.contrib.auth.models import AnonymousUser
 from rest_framework.views import APIView
 from rest_framework.permissions import  IsAuthenticated
 from rest_framework.response import Response
 from  rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import render
 from rest_framework import viewsets,permissions
+from rest_framework import status
+
+
 
 #for the the current User
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from urllib3 import request
 
 #import the models here
-from .models import Post, Profile
+from .models import Post, Profile, Reaction
 #import the Serializers
-from .serializers import Postserializers, Profileserializers
+from .serializers import Postserializers, Profileserializers, Reactionserializer
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
@@ -76,3 +79,22 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Return ONLY the logged-in user's profile
         return Profile.objects.filter(user = self.request.user)
+
+
+
+
+class ReactionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        post_id = request.data.get('post')
+        reaction_type = request.data.get('reaction')
+
+        reaction, created = Reaction.objects.update_or_create(
+            user=request.user,
+            post_id=post_id,
+            defaults={'reaction': reaction_type}
+        )
+
+        serializer = Reactionserializer(reaction)
+        return Response(serializer.data, status=status.HTTP_200_OK)

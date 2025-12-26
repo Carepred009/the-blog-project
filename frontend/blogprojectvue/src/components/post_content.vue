@@ -23,6 +23,31 @@
                         Action
                   </button>
 
+                    <!--
+                        this is div is for reaction button. We will update later. Buttons for now for functionality
+                        accepts to 2 parameters of string and int(content.post_id) 
+                    -->
+                           <div class="post-reactions">
+                                <button class="reaction-button" @click="reactionPostMethod('like', content.post_id)">
+                                    👍 Like
+                                </button>
+                                <button class="reaction-button" @click="reactionPostMethod('love', content.post_id)">
+                                    ❤️ Love
+                                </button>
+                                <button class="reaction-button" @click="reactionPostMethod('haha', content.post_id)">
+                                    😂 Haha
+                                </button>
+                                <button class="reaction-button" @click="reactionPostMethod('sad', content.post_id)">
+                                    😢 Sad
+                                </button>
+                                <button class="reaction-button" @click="reactionPostMethod('angry', content.post_id)">
+                                    😡 Angry
+                                </button>
+                            </div>
+
+
+
+
                 </div>
                   <br>
            </div>
@@ -95,7 +120,7 @@
                                     >
                                 </div>
 
-                                <div class=mb-4>
+                                <div class="mb-4">
                                     <label for="postContent" class="form-label">Post Content </label>
                                     <textarea
                                         class="form-control"
@@ -116,7 +141,7 @@
 
                             </form>
                       </div>
-                      <hr class="my-4">
+                      <hr class="mb-4">
 
                       <div class="text-start">
                         <label class="form-label text-danger">Danger Zone</label>
@@ -164,7 +189,12 @@ export default{
                 post_id: "",
                 title: "",
                 post:"",
-            }
+            },
+
+            reactionPost:{
+                post_id:"",
+                reaction: "",
+            },
 
         };
      },
@@ -182,7 +212,7 @@ export default{
                 console.log(response.data);                                  // The raw data returned by the API will display in the console for debugging
                                                                           // Passes the fetched post data (the array of posts) to the 'contents' data property
                                                                              //use this.contents = response.data.result; when using pagination
-                this.contents = response.data.results                // Assigns the array of posts (from the 'results' field in the API response) to the component's 'contents' data property (used to display content lists with pagination)
+                 this.contents = response.data.results                // Assigns the array of posts (from the 'results' field in the API response) to the component's 'contents' data property (used to display content lists with pagination)
 
                 this.next = response.data.next                      // Assigns the URL for the next page of results (for pagination) to the component's 'next' data property
 
@@ -252,9 +282,32 @@ export default{
             }catch(error){
                 console.error(error)
             }//end of try/catch
-         }//end of function
+         },//end of function
+
+
+         async reactionPostMethod(reaction, post_id){
+                try{
+                        //Payload sent to Django REST API
+                        const payload = {
+                            post: post_id,       // keep it post: because the FK expects Post id. In the serializer and in the DB is post
+                            reaction: reaction   //Must match REACTION_CHOICES key
+                        };
+
+                        //Send POST request to /react/ end point
+                        const response = await api.post(`/react/`,payload);
+                         console.log(response.data)
+                          // reset local reactionPost object
+                        this.reactionPost = {post_id: "", reaction:""};
+
+                }catch(error){
+                    console.error(error)
+                }
+         } // end to add , if there is another function next to it
 
     },//end of methods
+
+
+
 
 
 };//end for export

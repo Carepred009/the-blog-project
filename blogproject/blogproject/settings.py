@@ -84,10 +84,11 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-            #Do not mix with JWT
-        #'rest_framework.authentication.TokenAuthentication',
+            #If you’re using JWT (SimpleJWT), you must include the token in your POST request.
+            #Browsable API does not automatically send JWT, even if you logged in via /login/.
+           'rest_framework.authentication.TokenAuthentication', # allows Browsable API login
             #for logout
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication', #This nest fit for REST API
     ],
 }
 #Tell dj-rest-auth to use JWT:

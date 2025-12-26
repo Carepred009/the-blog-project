@@ -31,3 +31,24 @@ class Profile(models.Model):
 
     def __str__(self):
         return  self.user.username
+
+
+
+#Reaction model
+class Reaction(models.Model):
+    reaction_id = models.AutoField(primary_key = True)
+
+    REACTION_CHOICES = [
+        ('like','Like'),  #like - stored in the database , Like - human-readable label (used in admin, forms, serializers)
+        ('love','Love'),
+        ('haha', 'Haha'),
+        ('angry','Angry'),
+        ('sad', 'Sad'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True )
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True , related_name='reaction')
+    reaction = models.CharField(max_length=20, choices=REACTION_CHOICES)  #reaction field
+
+    class Meta:
+        unique_together = ('user', 'post') # One reaction per user per post
