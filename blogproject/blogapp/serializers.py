@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Post, Profile, Reaction
+from .models import Post, Profile, PostReaction, CommentReaction, Comment
+
 
 class Postserializers(serializers.ModelSerializer):
     class Meta:
@@ -18,8 +19,19 @@ class Profileserializers(serializers.ModelSerializer):
         # WE can keep it like this, still working. Soon need authentication for the current user
         fields = ['profile_id','bio','profile_picture','user']
 
-#serializer for Reaction model
-class Reactionserializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Reaction
+        model = Comment
+        fields = ['comment_id','comment','post', 'user'] # add this user if you didnt use the self.user in the view
+
+#serializer for Reaction model
+class PostReactionserializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostReaction
         fields = ['reaction_id','post', 'reaction']
+
+
+class CommentReactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentReaction
+        fields = ['reaction_id','comment','reaction']
