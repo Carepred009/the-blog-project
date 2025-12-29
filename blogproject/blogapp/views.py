@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AnonymousUser
 from rest_framework.views import APIView
-from rest_framework.permissions import  IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from  rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import render
@@ -14,9 +14,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from urllib3 import request
 
 #import the models here
-from .models import Post, Profile, Reaction
+from .models import Post, Profile, PostReaction, Comment
 #import the Serializers
-from .serializers import Postserializers, Profileserializers, Reactionserializer
+from .serializers import Postserializers, Profileserializers, PostReactionserializer, CommentSerializer
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
@@ -83,18 +83,29 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 
 
-class ReactionView(APIView):
+class PostReactionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         post_id = request.data.get('post')
         reaction_type = request.data.get('reaction')
 
-        reaction, created = Reaction.objects.update_or_create(
+        reaction, created = PostReaction.objects.update_or_create(
             user=request.user,
             post_id=post_id,
             defaults={'reaction': reaction_type}
         )
 
-        serializer = Reactionserializer(reaction)
+        serializer = PostReactionserializer(reaction)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CommentViewSet(viewsets.ModelViewSet):
+     queryset = Comment.objects.all()
+     serializer_class = CommentSerializer
+     permission_classes = [IsAuthenticated]
+     #Do not use permission_class when you want to TEST CRUD In Browsable API
+     #permission_classes = [IsAuthenticatedOrReadOnly] #Spectator can read the comment but cannot UPDATE and DELETE
+
+     def perform_create(self, serializer):  #this is importante when authenticating user in Pytest
+         serializer.save(user=self.request.user)
+

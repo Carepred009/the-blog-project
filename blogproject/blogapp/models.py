@@ -7,9 +7,6 @@ from django.utils.translation.template import blankout
 
 # Create your models here.
 
-
-
-
 class Post(models.Model):
     post_id = models.AutoField(primary_key = True)
     title = models.CharField(max_length=255, null=True, blank=True)
@@ -34,8 +31,20 @@ class Profile(models.Model):
 
 
 
+
+#Comment model
+class Comment(models.Model):
+    comment_id = models.AutoField(primary_key = True)
+    comment = models.TextField(blank=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True, related_name="posts")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="user")
+    created_at = models.DateTimeField(auto_now_add=True)  #set True for auto set the tinme with the current time
+
+    def __str__(self):
+        return self.comment
+
 #Reaction model
-class Reaction(models.Model):
+class PostReaction(models.Model):
     reaction_id = models.AutoField(primary_key = True)
 
     REACTION_CHOICES = [
@@ -47,8 +56,26 @@ class Reaction(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True , related_name='reaction')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True , related_name='reactions')
     reaction = models.CharField(max_length=20, choices=REACTION_CHOICES)  #reaction field
 
     class Meta:
         unique_together = ('user', 'post') # One reaction per user per post
+
+class CommentReaction(models.Model):
+      reaction_id = models.AutoField(primary_key=True)
+
+      REACTION_CHOICES = [
+          ('like', 'Like'),
+          # like - stored in the database , Like - human-readable label (used in admin, forms, serializers)
+          ('love', 'Love'),
+          ('haha', 'Haha'),
+          ('angry', 'Angry'),
+          ('sad', 'Sad'),
+      ]
+      user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+      comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True, related_name='reactions')
+      reaction = models.CharField(max_length=20, choices=REACTION_CHOICES)  # reaction field
+
+      class Meta:
+          unique_together = ('user', 'comment')  # One reaction per user per comment
