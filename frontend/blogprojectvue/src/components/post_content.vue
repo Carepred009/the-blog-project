@@ -47,9 +47,14 @@
 
 
 
+                  <!-- Comments component
+                    Props = data passed from parent to child
+                    -->
+                      <comments :postId="content.post_id" />
 
                 </div>
                   <br>
+
            </div>
 
 
@@ -171,8 +176,11 @@
 
 <script>
 import api from "../axios.js"
+import comments from "../components/comments.vue"
 
 export default{
+    components : {comments},
+
     data(){
 
         return{

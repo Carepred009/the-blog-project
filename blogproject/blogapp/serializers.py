@@ -21,9 +21,11 @@ class Profileserializers(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
+        # Read-only username instead of full user object
+        user = serializers.ReadOnlyField(source="user.username")
         model = Comment
         fields = ['comment_id','comment','post', 'user'] # add this user if you didnt use the self.user in the view
-
+        #read_only_fields = ["user"]
 #serializer for Reaction model
 class PostReactionserializer(serializers.ModelSerializer):
     class Meta:
