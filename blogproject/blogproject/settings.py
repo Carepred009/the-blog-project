@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+#for JWT token auto-refresh
+from datetime import timedelta
 
 from pathlib import Path
 
@@ -96,8 +98,31 @@ REST_USE_JWT = True
 
 # Need to understands this
 SIMPLE_JWT = {
+    # When refresh tokens are rotated, the old refresh token
+    # is immediately invalidated (blacklisted).
+    # This prevents stolen refresh tokens from being reused.
     'BLACKLIST_AFTER_ROTATION': True,
+
+    # Short-lived access token
+    # Used on EVERY API request
+    # Expires quickly for security
+    #for auto refresh token
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+
+    # Long-lived refresh token
+    # Used ONLY to request a new access token
+    # User stays logged in until this expires
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+
+    # Each time the access token is refreshed:
+    # - A NEW refresh token is issued
+    # - The OLD refresh token becomes invalid
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
+
+
+
 
 #Without this, allauth may behave unexpectedly (email login issues, username conflicts).
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
