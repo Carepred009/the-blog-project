@@ -72,7 +72,7 @@ class LogoutView(APIView):
 
 #We will use viewset for all the CRUD operation
 class ProfileViewSet(viewsets.ModelViewSet):
-    #queryset = Profile.objects.all() --remove this because we will link the profile to the only one user
+    #queryset = Profile.objects.all() #remove this because we will link the profile to the only one user
     serializer_class = Profileserializers
     permission_classes = [permissions.IsAuthenticated]
 

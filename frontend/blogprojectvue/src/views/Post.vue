@@ -4,6 +4,21 @@
         <h1> We will put the logout in here for now! </h1>
         <button @click="logoutUser()"> LOG OUT FOR NOW </button>
     </div>
+
+    <div>
+        <h1> Profile Page</h1>
+                 <!--
+                  This router-link is used to navigate the user to their own Profile page.
+                  It does NOT make any API request.
+                  Vue Router simply changes the URL to match the route named "profile_page"
+                  and loads the Profile.vue component.
+                -->
+            <router-link :to="{ name: 'profile_page' }">
+              My Profile
+            </router-link>
+
+    </div>
+
 <div class="container mt-5">
 
     <form @submit.prevent="createPost">
@@ -71,33 +86,33 @@ export default{
             }
         },  //end of function
 
-        // This function logs out the currently authenticated user
+                                                                        // This function logs out the currently authenticated user
         async logoutUser(){
                 try{
-                        // Send a POST request to the Django logout endpoint
-                        // The Axios interceptor automatically adds the Authorization header (access token)
+                                                                        // Send a POST request to the Django logout endpoint
+                                                                        // The Axios interceptor automatically adds the Authorization header (access token)
                     const response = await api.post(`/api/logout/`, {
 
-                                // Send the refresh token in the request body
-                                 // This allows the backend to blacklist (invalidate) the refresh token
+                                                                        // Send the refresh token in the request body
+                                                                         // This allows the backend to blacklist (invalidate) the refresh token
                         refresh: localStorage.getItem("refresh"),
                     })
-                                    // Remove the access token from localStorage
-                                    // This immediately logs the user out on the frontend
+                                                                        // Remove the access token from localStorage
+                                                                        // This immediately logs the user out on the frontend
                     localStorage.removeItem("access")
 
-                     // Remove the refresh token from localStorage
-                      // This prevents the user from getting new access tokens
+                                                                     // Remove the refresh token from localStorage
+                                                                      // This prevents the user from getting new access tokens
                     localStorage.removeItem("refresh")
 
-                    // Redirect the user to the login page after logout
-                    this.$router.push("/login")
+
+                    this.$router.push("/login")               // Redirect the user to the login page after logout
 
 
-                    console.log(response.data)  // Log the response from the backend (for debugging)
+                    console.log(response.data)               // Log the response from the backend (for debugging)
                     alert("Successfully logout!")
                 }catch(error){
-                    console.error(error)    // Log any error that occurs during the logout process
+                    console.error(error)                        // Log any error that occurs during the logout process
                     alert("Error in log out!")
                 }
         }, //end of function

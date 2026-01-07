@@ -87,7 +87,7 @@
 import api from "../axios.js"; // axios instance
 
 export default {
-         // Reactive state for the component
+            // Reactive state for the component
   data() {
     return {
             //Object holding only form data(sent to backend)
@@ -98,20 +98,20 @@ export default {
             password2: "",      // required by dj-rest-auth
       },
 
-                //UI feedback message (Not sent to backend)
+                                                 //UI feedback message (Not sent to backend)
         message: "",        // success message
         error: "",           // error message
     };
   },
 
   methods: {
-                  // Called when the registration form is submitted
-    async userRegistration() {
+
+    async userRegistration() {                   // Called when the registration form is submitted
       try {
-                 // Send POST request to backend registration endpoint
-        const response = await api.post(
+
+        const response = await api.post(            // Send POST request to backend registration endpoint
           `/api/auth/registration/`,
-          this.register             // send only form data
+          this.register                             // send only form data
         );
 
                     // Clear input fields after successful registration
@@ -120,20 +120,20 @@ export default {
         this.register.password1 = "";
         this.register.password2 = "";
 
-                // Show success message to the user
-        this.message = "Registration successful!";
-                   // Optional alert popup
-        alert('Successfully registered!')
-                 // Log backend response (useful for debugging)
-        console.log(response.data)
-      } catch (error) {
-                          // Log backend validation error to browser console
-        console.error(error.response.data)
-                      // Display backend error message to user
-        this.error = error.response.data;
 
-                 // Optional alert popup
-        alert('Error')
+        this.message = "Registration successful!";       // Show success message to the user
+
+        alert('Successfully registered!')                // Optional alert popup
+
+        console.log(response.data)                        // Log backend response (useful for debugging)
+      } catch (error) {
+
+        console.error(error.response.data)              // Log backend validation error to browser console
+
+        this.error = error.response.data;               // Display backend error message to user
+
+
+        alert('Error')                           // Optional alert popup
       }
     },
 
