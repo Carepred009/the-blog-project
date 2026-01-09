@@ -82,6 +82,8 @@ export default {
         localStorage.setItem("access", response.data.access);     // Saves the access token to the browser's local storage
         localStorage.setItem("refresh", response.data.refresh);    // Saves the refresh token to the browser's local storage
 
+
+       // localStorage.setItem("user_id", response.data.user.id)
         console.log(response.data);     // Logs the API response data to the console (for debugging)
 
         this.$router.push("/");         // Uses Vue Router to navigate the user to the home page (/)

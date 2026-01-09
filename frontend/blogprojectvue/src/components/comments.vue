@@ -5,25 +5,44 @@
     </div>
 
     <div class="card-body">
-      <div
-        v-for="comment in comments"
-        :key="comment.comment_id"
-        class="comment border-bottom py-2"
-      >
-        <p class="mb-1 text-muted small">Post ID: {{ comment.post }}</p>
+          <div
+            v-for="comment in comments"
+            :key="comment.comment_id"
+            class="comment border-bottom py-2"
+          >
+            <p class="mb-1 text-muted small">Post ID: {{ comment.post }}</p>
 
-        <strong class="text-dark">
-          <i class="bi bi-person-circle me-1"></i>
-          {{ comment.user }}
-        </strong>
+            <strong class="text-dark">
+              <i class="bi bi-person-circle me-1"></i>
+              {{ comment.username}}
+            </strong>
 
-        <p class="mt-1 mb-1">{{ comment.comment }}</p>
+            <p class="mt-1 mb-1">{{ comment.comment }}</p>
 
-        <small class="text-muted d-block text-end">
-          <i class="bi bi-clock-fill me-1"></i>
-          {{ comment.created_at }}
-        </small>
-      </div>
+            <small class="text-muted d-block text-end">
+              <i class="bi bi-clock-fill me-1"></i>
+              {{ comment.created_at }}
+            </small>
+
+            <p>Comment owner: {{ comment.username }}</p>
+
+
+              <!-- Show delete button only if owner -->
+              <!--
+                  Show delete button only if the backend confirms
+                  the authenticated user owns this comment.
+                  This is UI logic only; backend still enforces security.
+              -->
+              <button
+                  v-if="comment.is_owner"
+                  @click="deleteComment(comment.comment_id)"
+                >
+                  delete the comment
+                </button>
+
+          </div>
+
+
 
       <div v-if="!comments.length" class="alert alert-info mt-3" role="alert">
         No comments yet. Be the first to comment!
@@ -59,12 +78,15 @@ import api from "../axios.js";
 
 export default {
 
+
+
  props: {                 //   `props` are values passed from a parent component to this child component.
   postId: {                 // postId is the ID of the post this comment section belongs to
     type: Number,
     required: true
   }
 },
+
 
 
   data() {
@@ -78,7 +100,27 @@ export default {
     this.getComments();             // Fetch comments as soon as the component loads
   },
 
+
+
   methods: {
+
+    async deleteComment(commentId){
+        try{
+
+            const response = await api.delete(`/api/comments/${commentId}/`)        //  Send the DELETE request to the API endpoint for the specific comment ID.
+            console.log(response.data)                                              //  Log the response data (for debugging/confirmation).
+
+                           // On successful deletion, call another function to refresh the list of comments
+                            //    displayed in the user interface.
+            this.getComments()
+        }catch(error){
+                                         //  If the API call fails (e.g., 403 Forbidden, 404 Not Found), log the error.
+                console.error(error)
+        }
+
+    },
+
+
     async getComments() {
       try {
         const response = await api.get("/api/comments/");               // Make GET request to fetch all comments
