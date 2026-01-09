@@ -23,13 +23,14 @@ from rest_framework.filters import OrderingFilter
 from .pagination import PostPagination # this is from pagination.py
 
 
+
 # Create your views here.
 #We will use viewset for all the CRUD operation
 #this view is for Post model
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all() #.order_by('-post_id') #the .order_by('-post_id') will responsible for displaying the lates posting
     serializer_class = Postserializers
-
+    permission_classes = [IsAuthenticated]
 
     pagination_class = PostPagination                       # Connects pagination to this API
 
@@ -52,9 +53,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     #We will not us this for now, we can keep it but it will be null
 
-   # def perform_create(self, serializer):
-        #Set automatically set the author to the current logged-in user
-     #   serializer.save(author = self.request.user)
+    def perform_create(self, serializer):
+            #Set automatically set the author to the current logged-in user
+        serializer.save(author = self.request.user)
 
 
 #This view is for logout to invalidates the refresh token after log out
@@ -106,6 +107,31 @@ class CommentViewSet(viewsets.ModelViewSet):
      #Do not use permission_class when you want to TEST CRUD In Browsable API
      #permission_classes = [IsAuthenticatedOrReadOnly] #Spectator can read the comment but cannot UPDATE and DELETE
 
-     def perform_create(self, serializer):  #this is importante when authenticating user in Pytest
+    #If you are updating and deleting please comment this to make it easy.
+     # this is importante when authenticating user in Pytest
+     # Automatically attach the currently authenticated user as the comment owner.
+     # This prevents the frontend from faking user IDs and is critical for security
+     def perform_create(self, serializer):
          serializer.save(user=self.request.user)
 
+     # Pass the request object into the serializer context.
+     # This is REQUIRED so the serializer can access `request.user`
+     # when computing ownership (is_owner).
+     def get_serializer_context(self):
+         context = super().get_serializer_context()
+         context["request"] = self.request
+         return context
+
+     # Ensure only the owner of the comment can delete it.
+     # Frontend button hiding is NOT security — this backend check is.
+     def destroy(self, request, *args, **kwargs):
+         comment = self.get_object()
+
+         # Block deletion if the authenticated user is not the owner
+         if comment.user != request.user:
+             return Response(
+                 {"detail": "You can only delete your own comment."},
+                 status=status.HTTP_403_FORBIDDEN
+             )
+         # Allow deletion if ownership check passes
+         return super().destroy(request, *args, **kwargs)

@@ -39,12 +39,39 @@ class Profileserializers(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    # Computed field used by the frontend to decide
+    # whether the delete button should be shown
+    is_owner = serializers.SerializerMethodField()
+
+    # Expose user ID explicitly without allowing edits
+    user_id = serializers.IntegerField(source="user.id", read_only=True)
+
+    # Expose username so Vue does not need another API call
+    username = serializers.CharField(source="user.username", read_only=True)
     class Meta:
-        # Read-only username instead of full user object
-        user = serializers.ReadOnlyField(source="user.username")
         model = Comment
-        fields = ['comment_id','comment','post', 'user'] # add this user if you didnt use the self.user in the view
+        fields = [
+            "comment_id",
+            "comment",
+            "user_id",
+            "username",
+            "post",
+            "user",
+            "created_at",
+            "is_owner",
+        ] # add this user if you didnt use the self.user in the view
         #read_only_fields = ["user"]
+
+    # Determines whether the currently authenticated user
+    # is the owner of this comment.
+    # Used ONLY for frontend logic (UI), not for security.
+    def get_is_owner(self, obj):
+        request = self.context.get("request")
+        # Ensure request exists and user is authenticated
+        if request and request.user.is_authenticated:
+            return obj.user == request.user
+        return False
+
 #serializer for Reaction model
 class PostReactionserializer(serializers.ModelSerializer):
     class Meta:
