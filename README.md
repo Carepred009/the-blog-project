@@ -43,7 +43,7 @@ Vue Router
 
 Axios
 
-HTML / CSS
+HTML / CSS / Bootstrap5
 
 
 👨‍💻 Author
