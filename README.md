@@ -31,7 +31,7 @@ Django
 
 Django REST Framework
 
-SQLite / PostgreSQL (configurable)
+MySQL
 
 JWT / Token Authentication
 
