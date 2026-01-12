@@ -40,6 +40,28 @@
                   delete the comment
                 </button>
 
+
+               <button
+                  v-if="comment.is_owner"
+                  @click="startEdit(comment)"
+                >
+                  EDIT
+                </button>
+
+
+
+                <div v-if="editingCommentId === comment.comment_id">
+                  <textarea v-model="updatedComment"></textarea>
+
+                  <button @click="updateComment">
+                    Update the comment
+                  </button>
+
+                    <!-- Cancel editing and revert UI state -->
+                    <button @click="cancelEdit">
+                        Cancel
+                    </button>
+                </div>
           </div>
 
 
@@ -79,12 +101,12 @@ import api from "../axios.js";
 export default {
 
 
-
  props: {                 //   `props` are values passed from a parent component to this child component.
   postId: {                 // postId is the ID of the post this comment section belongs to
     type: Number,
     required: true
   }
+
 },
 
 
@@ -93,6 +115,9 @@ export default {
     return {
       comments: [],                 // Array to store comments that belong ONLY to this post
       newComment: "",               // Stores the text typed by the user in the textarea
+
+      updatedComment: "",
+      editingCommentId: null
     };
   },
 
@@ -102,7 +127,48 @@ export default {
 
 
 
-  methods: {
+     methods: {
+
+       // Exit edit mode without saving changes
+     cancelEdit(){
+        // this.updateComment= "";           // clear textarea,
+        this.editingCommentId= null;  // hide edit section
+     },
+
+      // Called when the EDIT button is clicked
+      // receive FULL comment object
+      startEdit(comment) {
+        this.updatedComment = comment.comment;          // load existing comment text
+        this.editingCommentId = comment.comment_id;     // track comment being edited
+      },
+
+     // Called when the "Update the comment" button is clicked
+        async updateComment() {
+        try {
+                //Send updated comment text to the backend (PATCH request)
+          const response = await api.patch(
+            `/api/comments/${this.editingCommentId}/`,
+            {
+              comment: this.updatedComment    // SEND UPDATED COMMENT
+            }
+          );
+
+          console.log(response.data);
+
+          // Optional: update UI instantly
+          this.comment = this.updatedComment;
+
+          // reset edit mode
+          // Reset edit state so textarea disappears
+          this.editingCommentId = null;
+          this.updatedComment = "";
+
+           this.getComments()           // Re-fetch comments to reflect the updated comment
+        } catch (error) {
+          console.log(error);
+        }
+   },
+
 
     async deleteComment(commentId){
         try{
