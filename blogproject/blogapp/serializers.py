@@ -1,3 +1,4 @@
+from django.template.defaulttags import comment
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -79,7 +80,18 @@ class PostReactionserializer(serializers.ModelSerializer):
         fields = ['reaction_id','post', 'reaction']
 
 
-class CommentReactSerializer(serializers.ModelSerializer):
+class CommentReactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentReaction
-        fields = ['reaction_id','comment','reaction']
+        fields = ['reaction_id', 'comment','reaction']
+
+'''
+class CommentReactSerializer(serializers.ModelSerializer):
+
+    #Exposes the comment where the user is reacting and what reaction
+    comments = serializers.CharField(source="comment.comment", read_only=True)
+    class Meta:
+        model = CommentReaction
+        fields = ['reaction_id', 'user','comment','comments','reaction']
+'''
+#Serializer for comment reaction

@@ -1,4 +1,6 @@
 from django.contrib.auth.models import AnonymousUser
+from django.core.serializers import serialize
+from django.template.defaulttags import comment
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
@@ -13,10 +15,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from urllib3 import request
 
-#import the models here
-from .models import Post, Profile, PostReaction, Comment
+#import the models hererea
+from .models import Post, Profile, PostReaction, Comment, CommentReaction
 #import the Serializers
-from .serializers import Postserializers, Profileserializers, PostReactionserializer, CommentSerializer
+from .serializers import Postserializers, Profileserializers, PostReactionserializer, CommentSerializer, CommentReactionSerializer
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
@@ -135,3 +137,57 @@ class CommentViewSet(viewsets.ModelViewSet):
              )
          # Allow deletion if ownership check passes
          return super().destroy(request, *args, **kwargs)
+
+#Comment Reactions per user
+
+class PostReactionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        post_id = request.data.get('post')
+        reaction_type = request.data.get('reaction')
+
+        reaction, created = PostReaction.objects.update_or_create(
+            user=request.user,
+            post_id=post_id,
+            defaults={'reaction': reaction_type}
+        )
+
+        serializer = PostReactionserializer(reaction)
+
+
+class CommentReactionView(APIView):
+    permission_classes = [IsAuthenticated] #disable this when testing in Browsable API
+    #permission_classes = [AllowAny]  #use this when this in Browsable API
+
+    def post(self, request):
+        comment_id = request.data.get('comment')
+        reaction_type = request.data.get('reaction')
+
+        reaction, created = CommentReaction.objects.update_or_create(
+            user = request.user,
+            comment_id = comment_id,
+            defaults={'reaction':reaction_type}
+        )
+
+        serializer = CommentReactionSerializer(reaction)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+
+
+
+
+'''
+class CommentReactionView(viewsets.ModelViewSet):
+    queryset = CommentReaction.objects.all()
+    serializer_class = CommentReactSerializer
+    #permission_classes = [IsAuthenticated]
+
+    #it ensure only the user can create the reactionn
+   # def perform_create(self, serializer):
+   #     serializer.save(user=self.request.user)
+
+'''
+
+
+

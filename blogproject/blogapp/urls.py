@@ -3,7 +3,7 @@ from os.path import basename
 
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from .views import CommentViewSet, PostViewSet, LogoutView, ProfileViewSet, PostReactionView
+from .views import CommentReactionView, CommentViewSet, PostViewSet, LogoutView, ProfileViewSet, PostReactionView, CommentReactionView
 
 #for login,logout
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
@@ -19,6 +19,10 @@ router.register(r'profiles', ProfileViewSet, basename="profile")
 
 #use the /comments/ to access the url
 router.register('comments',CommentViewSet, basename="comment")
+
+#use the '/comments/reaction/' to access in the url
+#router.register('comment/reactions',CommentReactionView, basename="comment/reaction")
+
 
 #router.register(r'reactions', ReactionViewSet, basename="reaction")
 
@@ -41,6 +45,9 @@ urlpatterns = [
 
     # API end point Reaction view
     path('react/', PostReactionView.as_view(), name="post-react"),
+
+    #API end point for comment reaction
+    path('react-comment/', CommentReactionView.as_view(), name="comment-react")
 
 
 ]

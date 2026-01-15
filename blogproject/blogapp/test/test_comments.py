@@ -3,11 +3,15 @@ from http.client import responses
 import pytest
 from django.contrib.auth.models import User
 from django.template.defaultfilters import title
+from django.template.defaulttags import comment
 from pytest_django.fixtures import client
 from rest_framework import status
 
 from rest_framework.test import APIClient
-from blogapp.models import Post, Comment
+from blogapp.models import Post, Comment, CommentReaction
+
+
+
 
 @pytest.mark.django_db
 def test_owner_can_delete_comment():
@@ -73,3 +77,44 @@ def test_owner_can_update_comment():
     #Assertions
     assert response.status_code == status.HTTP_200_OK
     assert  comment.comment == "Updated Comment"
+
+@pytest.mark.django_db
+def test_user_can_react_to_comment():
+    """
+       PURPOSE:
+       Ensure an authenticated user can create a reaction
+       for a specific comment.
+       """
+    #Create user
+    user = User.objects.create_user(username="testuser", password="pass123")
+
+    #Create post and comment for FK values
+    post = Post.objects.create(title="post",post="body", author = user)
+    comment = Comment.objects.create(comment="Nice Post", post=post, user=user)
+
+    #Authenticate client
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    # Payload for reaction
+    # Payload sent to the API containing the comment ID and the selected reaction
+    payload = {
+        "comment" : comment.comment_id,        # ID of the comment that the user is reacting to
+        "reaction": "haha",                         # The reaction type chosen by the user
+    }
+
+    #Call the API
+    # Send a POST request to the react-comment endpoint using the authenticated client
+    response = client.post('/react-comment/', payload, format="json")
+
+    #Assertions
+    # Assert that the API request was successful (reaction was accepted)
+    assert  response.status_code == status.HTTP_200_OK
+
+    # Assert that exactly one CommentReaction record was created in the database
+    assert CommentReaction.objects.count() == 1
+
+    # Retrieve the first (and only) reaction object from the database
+    reaction = CommentReaction.objects.first()
+    # Assert that the stored reaction value matches the expected reaction ("haha")
+    assert reaction.reaction == "haha"
