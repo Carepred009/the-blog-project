@@ -62,6 +62,9 @@ class PostReaction(models.Model):
     class Meta:
         unique_together = ('user', 'post') # One reaction per user per post
 
+    def __str__(self):
+        return self.reaction
+
 class CommentReaction(models.Model):
       reaction_id = models.AutoField(primary_key=True)
 
@@ -79,3 +82,6 @@ class CommentReaction(models.Model):
 
       class Meta:
           unique_together = ('user', 'comment')  # One reaction per user per comment
+
+      def __str__(self):
+          return self.reaction

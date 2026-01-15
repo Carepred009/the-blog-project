@@ -62,6 +62,32 @@
                         Cancel
                     </button>
                 </div>
+
+
+
+
+                    <!--
+                        this is div is for reaction button. We will update later. Buttons for now for functionality
+                        accepts to 2 parameters of string and int(comment.comment_id)
+                    -->
+                           <div class="post-reactions">
+                                <button class="reaction-button" @click="reactionCommentMethod('like', comment.comment_id)">
+                                    👍 Like
+                                </button>
+                                <button class="reaction-button" @click="reactionCommentMethod('love', comment.comment_id)">
+                                    ❤️ Love
+                                </button>
+                                <button class="reaction-button" @click="reactionCommentMethod('haha', comment.comment_id)">
+                                    😂 Haha
+                                </button>
+                                <button class="reaction-button" @click="reactionCommentMethod('sad', comment.comment_id)">
+                                    😢 Sad
+                                </button>
+                                <button class="reaction-button" @click="reactionCommentMethod('angry', comment.comment_id)">
+                                    😡 Angry
+                                </button>
+                            </div>
+
           </div>
 
 
@@ -117,7 +143,13 @@ export default {
       newComment: "",               // Stores the text typed by the user in the textarea
 
       updatedComment: "",
-      editingCommentId: null
+      editingCommentId: null,
+
+    reactionComment: {
+          comment_id: "",      // Stores the ID of the comment being reacted to
+          reaction: "",        // Stores the selected reaction type (like, love, haha, etc.)
+        }
+
     };
   },
 
@@ -125,41 +157,62 @@ export default {
     this.getComments();             // Fetch comments as soon as the component loads
   },
 
-
-
      methods: {
 
-       // Exit edit mode without saving changes
+    // Method that sends a reaction for a specific comment to the backend
+    // `reaction`  → type of reaction (e.g. "like", "haha")
+    // `comment_id` → ID of the comment being reacted to
+     async reactionCommentMethod(reaction,comment_id){
+            try{
+
+                  // Matches backend fields expected by /react-comment/
+                const payload = {
+                    comment: comment_id,            // Comment ID (foreign key reference)
+                    reaction: reaction              // Reaction type string
+                }
+
+                const response = await api.post(`/react-comment/`, payload);        // Send POST request to backend API to save the reaction
+                console.log(response.data);                                         // Log backend response (useful for debugging / confirmation)
+
+                // Reset local reaction state after successful submission
+                 // Prevents stale data from being reused accidentally
+                this.reactionComment = { comment_id:"", reaction:""}
+
+            }catch(error){
+                console.error(error)    // Catch and log any errors (network error, 401, 400, etc.)
+            }
+     },
+
+
+                                                 // Exit edit mode without saving changes
      cancelEdit(){
         // this.updateComment= "";           // clear textarea,
         this.editingCommentId= null;  // hide edit section
      },
 
-      // Called when the EDIT button is clicked
-      // receive FULL comment object
+                                                      // Called when the EDIT button is clicked
+                                                      // receive FULL comment object
       startEdit(comment) {
         this.updatedComment = comment.comment;          // load existing comment text
         this.editingCommentId = comment.comment_id;     // track comment being edited
       },
 
-     // Called when the "Update the comment" button is clicked
+                                                          // Called when the "Update the comment" button is clicked
         async updateComment() {
         try {
-                //Send updated comment text to the backend (PATCH request)
-          const response = await api.patch(
+
+          const response = await api.patch(              //Send updated comment text to the backend (PATCH request)
             `/api/comments/${this.editingCommentId}/`,
             {
-              comment: this.updatedComment    // SEND UPDATED COMMENT
+              comment: this.updatedComment               // SEND UPDATED COMMENT
             }
           );
 
           console.log(response.data);
+          this.comment = this.updatedComment;         // Optional: update UI instantly
 
-          // Optional: update UI instantly
-          this.comment = this.updatedComment;
-
-          // reset edit mode
-          // Reset edit state so textarea disappears
+                                          // reset edit mode
+                                          // Reset edit state so textarea disappears
           this.editingCommentId = null;
           this.updatedComment = "";
 
